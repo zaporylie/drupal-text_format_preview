@@ -28,7 +28,7 @@ function text_format_preview_theme($existing, $type, $theme, $path) {
 
 function theme_text_format_preview_wrapper($variables) {
   $element = $variables['element'];
-  $output = '<div id="text-format-preview-wrapper-' . $element['#id'] . '">';
+  $output = '<div id="text-format-preview-wrapper-' . $element['#id'] . '" class="text-format-preview-wrapper">';
   $output .= $element['#children'];
   $output .= "</div>\n";
   return $output;
@@ -41,6 +41,14 @@ function text_format_preview_process_text_format($element) {
     '#defualt_value' => FALSE,
     '#ajax' => array(
       'callback' => 'text_format_preview_callback',
+    ),
+    '#attributes' => array(
+      'class' => array('text_format_autopreview_checkbox'),
+    ),
+    '#attached' => array(
+      'js' => array(
+        drupal_get_path('module', 'text_format_preview') . '/text_format_preview.js',
+      ),
     ),
   );
   $element['preview'] = array(
