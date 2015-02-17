@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file
+ *
+ */
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function text_format_preview_element_info_alter(&$type) {
+  $type['text_format']['#theme_wrappers'][] = 'text_format_preview_wrapper';
+  $type['text_format']['#process'][] = 'text_format_preview_process_text_format';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function text_format_preview_theme($existing, $type, $theme, $path) {
+  return array(
+    'text_format_preview_wrapper' => array(
+      'render element' => 'element',
+    ),
+    'text_format_preview_checkbox_wrapper' => array(
+      'render element' => 'element',
+    ),
+  );
+}
+
+function theme_text_format_preview_wrapper($variables) {
+  $element = $variables['element'];
+  $output = '<div class="text-format-preview-wrapper">';
+  $output .= $element['#children'];
+  $output .= "</div>\n";
+  return $output;
+}
+
+function theme_text_format_preview_checkbox_wrapper($variables) {
+  $element = $variables['element'];
+  $output = '<div id="' . $element['#id'] . '-text-format-preview"></div>';
+  $output .= $element['#children'];
+  return $output;
+}
+
+function text_format_preview_process_text_format($element) {
+  $element['preview'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Autopreview'),
+    '#defualt_value' => FALSE,
+    '#ajax' => array(
+      'callback' => 'text_format_preview_callback',
+    ),
+  );
+  $element['preview']['#pre_render'][] = 'text_format_preview_process_text_format_preview_checkbox';
+  return $element;
+}
+
+function text_format_preview_callback($form, &$form_state) {
+  $commands = array();
+  $commands[] = ajax_command_html('#' . $form_state['triggering_element']['#id'] . '-text-format-preview', 'test');
+  return array(
+    '#type' => 'ajax',
+    '#commands' => $commands,
+  );
+}
+
+function text_format_preview_process_text_format_preview_checkbox($element) {
+  array_unshift($element['#theme_wrappers'], 'text_format_preview_checkbox_wrapper');
+  return $element;
+}
