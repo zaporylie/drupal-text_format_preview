@@ -28,21 +28,14 @@ function text_format_preview_theme($existing, $type, $theme, $path) {
 
 function theme_text_format_preview_wrapper($variables) {
   $element = $variables['element'];
-  $output = '<div class="text-format-preview-wrapper">';
+  $output = '<div id="text-format-preview-wrapper-' . $element['#id'] . '">';
   $output .= $element['#children'];
   $output .= "</div>\n";
   return $output;
 }
 
-function theme_text_format_preview_checkbox_wrapper($variables) {
-  $element = $variables['element'];
-  $output = '<div id="' . $element['#id'] . '-text-format-preview"></div>';
-  $output .= $element['#children'];
-  return $output;
-}
-
 function text_format_preview_process_text_format($element) {
-  $element['preview'] = array(
+  $element['autopreview'] = array(
     '#type' => 'checkbox',
     '#title' => t('Autopreview'),
     '#defualt_value' => FALSE,
@@ -50,20 +43,56 @@ function text_format_preview_process_text_format($element) {
       'callback' => 'text_format_preview_callback',
     ),
   );
-  $element['preview']['#pre_render'][] = 'text_format_preview_process_text_format_preview_checkbox';
+  $element['preview'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('text_format_preview'),
+    ),
+  );
   return $element;
 }
 
 function text_format_preview_callback($form, &$form_state) {
   $commands = array();
-  $commands[] = ajax_command_html('#' . $form_state['triggering_element']['#id'] . '-text-format-preview', 'test');
+
+  if ($form_state['triggering_element']['#value']) {
+    // get form element
+    $element = $form;
+    for ($i = 0; $i < (count($form_state['triggering_element']['#array_parents']) - 1); $i++) {
+      $element = $element[$form_state['triggering_element']['#array_parents'][$i]];
+    }
+
+    // get element value
+    $value = $form_state['values'];
+    for ($i = 0; $i < (count($form_state['triggering_element']['#parents']) - 1); $i++) {
+      $value = $value[$form_state['triggering_element']['#parents'][$i]];
+    }
+    $commands[] = ajax_command_html('#text-format-preview-wrapper-' . $element['#id'] . ' .text_format_preview', check_markup($value['value'], $value['format']));
+  }
+
   return array(
     '#type' => 'ajax',
     '#commands' => $commands,
   );
 }
 
-function text_format_preview_process_text_format_preview_checkbox($element) {
-  array_unshift($element['#theme_wrappers'], 'text_format_preview_checkbox_wrapper');
-  return $element;
+/**
+ * Implements hook_menu().
+ */
+function text_format_preview_menu() {
+  $items['test'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('text_format_preview_test_form'),
+    'access callback' => TRUE,
+  );
+  return $items;
+}
+
+function text_format_preview_test_form($form, &$form_state) {
+//  $form['#tree'] = TRUE;
+  $form['test']['test2']['test3'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Test'),
+  );
+  return $form;
 }
