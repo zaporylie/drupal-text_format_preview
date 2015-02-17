@@ -1,0 +1,25 @@
+.text-format-preview-wrapper {
+}
+.text-format-preview-autopreview {
+  float: right;
+  position: relative;
+  z-index: 2;
+}
+.text-format-preview-autopreview * {
+  display: inline;
+}
+.text-format-preview-autopreview-toggle {
+  font-size: 0.9em;
+  cursor: pointer;
+}
+.text-format-preview-preview {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 4px;
+  box-sizing: border-box;
+  min-height: 2em;
+  /*position: absolute;*/
+  /*top: 3em;*/
+}

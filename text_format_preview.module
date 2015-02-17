@@ -35,26 +35,55 @@ function theme_text_format_preview_wrapper($variables) {
 }
 
 function text_format_preview_process_text_format($element) {
+  $element['format']['#weight'] = 2;
   $element['autopreview'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Autopreview'),
-    '#defualt_value' => FALSE,
-    '#ajax' => array(
-      'callback' => 'text_format_preview_callback',
-    ),
+    '#type' => 'container',
+    '#weight' => -2,
     '#attributes' => array(
-      'class' => array('text_format_autopreview_checkbox'),
+      'class' => array('text-format-preview-autopreview')
     ),
-    '#attached' => array(
-      'js' => array(
-        drupal_get_path('module', 'text_format_preview') . '/text_format_preview.js',
+    'toggle' => array(
+      '#type' => 'container',
+      '#weight' => 0,
+      '#attributes' => array(
+        'class' => array('text-format-preview-autopreview-toggle'),
+      ),
+      'label' => array(
+        '#type' => 'markup',
+        '#markup' => t('Show / Hide'),
+      ),
+    ),
+    'checkbox' => array(
+      '#type' => 'checkbox',
+      '#weight' => 1,
+      '#title' => t('Autopreview'),
+      '#defualt_value' => FALSE,
+      '#ajax' => array(
+        'callback' => 'text_format_preview_callback',
+      ),
+      '#attributes' => array(
+        'class' => array('text-format-preview-autopreview-checkbox'),
+      ),
+      '#attached' => array(
+        'js' => array(
+          drupal_get_path('module', 'text_format_preview') . '/text_format_preview.js',
+        ),
+        'css' => array(
+          drupal_get_path('module', 'text_format_preview') . '/text_format_preview.css',
+        ),
       ),
     ),
   );
   $element['preview'] = array(
     '#type' => 'container',
+    '#weight' => 1,
     '#attributes' => array(
-      'class' => array('text_format_preview'),
+      'class' => array('text-format-preview-preview'),
+    ),
+    '#attached' => array(
+      'css' => array(
+        drupal_get_path('module', 'text_format_preview') . '/text_format_preview.css',
+      ),
     ),
   );
   return $element;
@@ -66,16 +95,16 @@ function text_format_preview_callback($form, &$form_state) {
   if ($form_state['triggering_element']['#value']) {
     // get form element
     $element = $form;
-    for ($i = 0; $i < (count($form_state['triggering_element']['#array_parents']) - 1); $i++) {
+    for ($i = 0; $i < (count($form_state['triggering_element']['#array_parents']) - 2); $i++) {
       $element = $element[$form_state['triggering_element']['#array_parents'][$i]];
     }
 
     // get element value
     $value = $form_state['values'];
-    for ($i = 0; $i < (count($form_state['triggering_element']['#parents']) - 1); $i++) {
+    for ($i = 0; $i < (count($form_state['triggering_element']['#parents']) - 2); $i++) {
       $value = $value[$form_state['triggering_element']['#parents'][$i]];
     }
-    $commands[] = ajax_command_html('#text-format-preview-wrapper-' . $element['#id'] . ' .text_format_preview', check_markup($value['value'], $value['format']));
+    $commands[] = ajax_command_html('#text-format-preview-wrapper-' . $element['#id'] . ' .text-format-preview-preview', check_markup($value['value'], $value['format']));
   }
 
   return array(
@@ -97,7 +126,7 @@ function text_format_preview_menu() {
 }
 
 function text_format_preview_test_form($form, &$form_state) {
-//  $form['#tree'] = TRUE;
+  $form['#tree'] = TRUE;
   $form['test']['test2']['test3'] = array(
     '#type' => 'text_format',
     '#title' => t('Test'),
