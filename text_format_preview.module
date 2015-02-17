@@ -130,6 +130,7 @@ function text_format_preview_test_form($form, &$form_state) {
   $form['test']['test2']['test3'] = array(
     '#type' => 'text_format',
     '#title' => t('Test'),
+    '#rows' => 20,
   );
   return $form;
 }

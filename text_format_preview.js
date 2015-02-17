@@ -34,7 +34,12 @@
         // Autoupdate preview.
         wrapper.find('textarea').bind('focus keyup', function() {
           if (checkbox.is(':checked')) {
-            Drupal.ajax[checkbox.attr('id')].eventResponse(checkbox, 'click');
+            window.clearTimeout(checkbox.data('timeout'));
+            checkbox.data('timeout', setTimeout(function () {
+              // Do your thing here
+              Drupal.ajax[checkbox.attr('id')].eventResponse(checkbox, 'click');
+              console.log('Render');
+            }, 2000));
           }
         })
       });
