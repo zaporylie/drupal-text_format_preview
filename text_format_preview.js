@@ -21,11 +21,22 @@
 //          }
 //        });
 
-        // Second way...
+//        // Second way...
+//        wrapper.find('.text-format-preview-preview').hide();
+//        wrapper.find('.text-format-preview-autopreview-toggle').bind('click', function() {
+//            wrapper.find('.text-format-preview-preview').toggle();
+//            wrapper.find('.form-textarea-wrapper').toggle();
+//        });
+
+        // Third way...
         wrapper.find('.text-format-preview-preview').hide();
-        wrapper.find('.text-format-preview-autopreview-toggle').bind('click', function() {
-            wrapper.find('.text-format-preview-preview').toggle();
-            wrapper.find('.form-textarea-wrapper').toggle();
+        checkbox.parent().bind('click', function() {
+          if (checkbox.is(':checked')) {
+            wrapper.find('.text-format-preview-preview').show();
+          }
+          else {
+            wrapper.find('.text-format-preview-preview').hide();
+          }
         });
 
         // Set preview height.
@@ -39,7 +50,7 @@
               // Do your thing here
               Drupal.ajax[checkbox.attr('id')].eventResponse(checkbox, 'click');
               console.log('Render');
-            }, 2000));
+            }, 1000));
           }
         })
       });

@@ -42,17 +42,17 @@ function text_format_preview_process_text_format($element) {
     '#attributes' => array(
       'class' => array('text-format-preview-autopreview')
     ),
-    'toggle' => array(
-      '#type' => 'container',
-      '#weight' => 0,
-      '#attributes' => array(
-        'class' => array('text-format-preview-autopreview-toggle'),
-      ),
-      'label' => array(
-        '#type' => 'markup',
-        '#markup' => t('Show / Hide'),
-      ),
-    ),
+//    'toggle' => array(
+//      '#type' => 'container',
+//      '#weight' => 0,
+//      '#attributes' => array(
+//        'class' => array('text-format-preview-autopreview-toggle'),
+//      ),
+//      'label' => array(
+//        '#type' => 'markup',
+//        '#markup' => t('Show / Hide'),
+//      ),
+//    ),
     'checkbox' => array(
       '#type' => 'checkbox',
       '#weight' => 1,
