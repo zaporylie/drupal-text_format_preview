@@ -1,3 +1,3 @@
 name = Text Format Preview
-description = Show live preview under text_format field.
+description = Show live preview under each text_format field.
 core = 7.x
