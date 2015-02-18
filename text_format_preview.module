@@ -5,6 +5,20 @@
  */
 
 /**
+ * Implements hook_menu().
+ */
+function text_format_preview_menu() {
+  $items['admin/config/content/formats/text_format_preview'] = array(
+    'title' => 'Text Format Preview settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('text_format_preview_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
  * Implements hook_element_info_alter().
  */
 function text_format_preview_element_info_alter(&$type) {
@@ -15,7 +29,7 @@ function text_format_preview_element_info_alter(&$type) {
 /**
  * Implements hook_theme().
  */
-function text_format_preview_theme($existing, $type, $theme, $path) {
+function text_format_preview_theme() {
   return array(
     'text_format_preview_wrapper' => array(
       'render element' => 'element',
@@ -104,19 +118,26 @@ function text_format_preview_callback($form, &$form_state) {
 
   // Only if triggering checkbox has value TRUE.
   if ($form_state['triggering_element']['#value']) {
-    $success = FALSE;
+
+    // Store in temporary variable.
     $path = $form_state['triggering_element']['#parents'];
 
     while (!empty($path)) {
       // Get value of parent text_format element starting from deepest element.
       $value = $form_state['values'];
       for ($i = 0; $i < count($path); $i++) {
+        // Get child element.
         $value = $value[$path[$i]];
       }
 
       if (isset($value['format']) && isset($value['value'])) {
+        // We can set custom replace command now.
+        $commands[] = array(
+          'command' => 'text_format_preview',
+          'selector' => NULL,
+          'preview' => check_markup($value['value'], $value['format']),
+        );
         // Element found. No need to run this function any more.
-        $success = TRUE;
         break;
       }
       else {
@@ -124,35 +145,12 @@ function text_format_preview_callback($form, &$form_state) {
         array_pop($path);
       }
     }
-
-    if ($success) {
-      // Send replace command if element has been found.
-      $commands[] = array(
-        'command' => 'text_format_preview',
-        'selector' => NULL,
-        'preview' => check_markup($value['value'], $value['format']),
-      );
-    }
   }
 
   return array(
     '#type' => 'ajax',
     '#commands' => $commands,
   );
-}
-
-/**
- * Implements hook_menu().
- */
-function text_format_preview_menu() {
-  $items['admin/config/content/formats/text_format_preview'] = array(
-    'title' => 'Text Format Preview settings',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('text_format_preview_settings'),
-    'access arguments' => array('administer site settings'), //@todo
-    'type' => MENU_NORMAL_ITEM,
-  );
-  return $items;
 }
 
 /**
