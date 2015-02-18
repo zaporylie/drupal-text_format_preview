@@ -2,6 +2,7 @@
   Drupal.behaviors.text_format_preview = {
     attach: function (context, settings) {
       $('.text-format-preview-autopreview-checkbox', context).once('text_format_preview', function () {
+
         // Store this as variable.
         var checkbox = $(this);
         // Store wrapper as variable.
@@ -35,4 +36,17 @@
       });
     }
   };
+
+  Drupal.ajax.prototype.commands.text_format_preview = function(ajax, response, status) {
+
+    if (response.selector == null || response.selector == undefined) {
+      response.selector = ajax.selector;
+    }
+
+    var trigger = $(response.selector);
+    var wrapper = trigger.parents('.text-format-preview-wrapper');
+    wrapper.find('.text-format-preview-preview').html(response.preview);
+  };
+
 })(jQuery);
+

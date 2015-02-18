@@ -29,8 +29,12 @@ function text_format_preview_theme($existing, $type, $theme, $path) {
 function theme_text_format_preview_wrapper($variables) {
   $element = $variables['element'];
 
+  $attributes = array(
+    'id' => 'text-format-preview-wrapper-' . $element['#id'],
+    'class' => array('text-format-preview-wrapper'),
+  );
   // Add wrapper.
-  $output = '<div id="text-format-preview-wrapper-' . $element['#id'] . '" class="text-format-preview-wrapper">';
+  $output = '<div ' . drupal_attributes($attributes) . '>';
   // Place element children here.
   $output .= $element['#children'];
   // Close wrapper.
@@ -47,6 +51,12 @@ function text_format_preview_process_text_format($element) {
   // Change default position of format.
   $element['format']['#weight'] = 3;
 
+  $ajax = array(
+    'callback' => 'text_format_preview_callback',
+  );
+
+  $element['format']['format']['#ajax'] = $ajax;
+
   // Add autopreview bar with checkbox.
   $element['autopreview'] = array(
     '#type' => 'container',
@@ -59,9 +69,7 @@ function text_format_preview_process_text_format($element) {
       '#weight' => 1,
       '#title' => t('Autopreview'),
       '#defualt_value' => FALSE,
-      '#ajax' => array(
-        'callback' => 'text_format_preview_callback',
-      ),
+      '#ajax' => $ajax,
       '#attributes' => array(
         'class' => array('text-format-preview-autopreview-checkbox'),
       ),
@@ -96,23 +104,35 @@ function text_format_preview_callback($form, &$form_state) {
 
   // Only if triggering checkbox has value TRUE.
   if ($form_state['triggering_element']['#value']) {
+    $success = FALSE;
+    $path = $form_state['triggering_element']['#parents'];
 
-    // Get form element we need id.
-    $element = $form;
-    for ($i = 0; $i < (count($form_state['triggering_element']['#array_parents']) - 2); $i++) {
-      $element = $element[$form_state['triggering_element']['#array_parents'][$i]];
+    while (!empty($path)) {
+      // Get value of parent text_format element starting from deepest element.
+      $value = $form_state['values'];
+      for ($i = 0; $i < count($path); $i++) {
+        $value = $value[$path[$i]];
+      }
+
+      if (isset($value['format']) && isset($value['value'])) {
+        // Element found. No need to run this function any more.
+        $success = TRUE;
+        break;
+      }
+      else {
+        // Element not found - try harder.
+        array_pop($path);
+      }
     }
 
-    // Get current value for text_format.
-    $value = $form_state['values'];
-    for ($i = 0; $i < (count($form_state['triggering_element']['#parents']) - 2); $i++) {
-      $value = $value[$form_state['triggering_element']['#parents'][$i]];
+    if ($success) {
+      // Send replace command if element has been found.
+      $commands[] = array(
+        'command' => 'text_format_preview',
+        'selector' => NULL,
+        'preview' => check_markup($value['value'], $value['format']),
+      );
     }
-
-    $commands[] = ajax_command_html(
-      '#text-format-preview-wrapper-' . $element['#id'] . ' .text-format-preview-preview',
-      check_markup($value['value'], $value['format'])
-    );
   }
 
   return array(
@@ -161,6 +181,11 @@ function text_format_preview_block_view($delta = '') {
 function text_format_preview_test_form($form, &$form_state) {
   $form['#tree'] = TRUE;
   $form['test']['test2']['test3'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Test'),
+    '#rows' => 20,
+  );
+  $form['test3'] = array(
     '#type' => 'text_format',
     '#title' => t('Test'),
     '#rows' => 20,
