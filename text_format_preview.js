@@ -9,8 +9,13 @@
         var wrapper = checkbox.parents('.text-format-preview-wrapper');
 
         // Manage preview visibility.
-        wrapper.find('.text-format-preview-preview').hide();
-        checkbox.parent().bind('click', function() {
+        if (checkbox.is(':checked')) {
+          wrapper.find('.text-format-preview-preview').show();
+        }
+        else {
+          wrapper.find('.text-format-preview-preview').hide();
+        }
+        checkbox.change(function() {
           // Show only if autopreview checkbox is checked.
           if (checkbox.is(':checked')) {
             wrapper.find('.text-format-preview-preview').show();
@@ -21,11 +26,11 @@
         });
 
         // Preview autoupdate.
-        wrapper.find('textarea').bind('change keyup keydown', function() {
+        wrapper.find('textarea').bind('change keyup', function() {
           if (checkbox.is(':checked')) {
             window.clearTimeout(checkbox.data('timeout'));
             checkbox.data('timeout', setTimeout(function () {
-              if (Drupal.ajax[checkbox.attr('id')].ajaxing == false) {
+              if (Drupal.ajax[checkbox.attr('id')].ajaxing == false || Drupal.ajax[checkbox.attr('id')].ajaxing == undefined) {
                 // Send new request after 300ms and if Drupal is not processing
                 // last one.
                 Drupal.ajax[checkbox.attr('id')].eventResponse(checkbox, 'click');

@@ -68,7 +68,7 @@ function text_format_preview_process_text_format($element) {
       '#type' => 'checkbox',
       '#weight' => 1,
       '#title' => t('Autopreview'),
-      '#defualt_value' => FALSE,
+      '#default_value' => variable_get('text_format_preview_autopreview_default', FALSE),
       '#ajax' => $ajax,
       '#attributes' => array(
         'class' => array('text-format-preview-autopreview-checkbox'),
@@ -151,7 +151,25 @@ function text_format_preview_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
+  $items['admin/config/content/formats/text_format_preview'] = array(
+    'title' => 'Text Format Preview settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('text_format_preview_settings'),
+    'access arguments' => array('administer site settings'), //@todo
+    'type' => MENU_NORMAL_ITEM,
+  );
   return $items;
+}
+
+function text_format_preview_settings($form, &$form_state) {
+
+  $form['text_format_preview_autopreview_default'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Turn on autopreview by default'),
+    '#default_value' => variable_get('text_format_preview_autopreview_default', FALSE),
+  );
+
+  return system_settings_form($form);
 }
 
 /**
