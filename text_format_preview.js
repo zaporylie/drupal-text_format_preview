@@ -7,30 +7,10 @@
         // Store wrapper as variable.
         var wrapper = checkbox.parents('.text-format-preview-wrapper');
 
-        // Manage visibility of preview.
-        // First way...
-//        wrapper.find('.text-format-preview-preview').css('visibility', 'hidden');
-//        wrapper.find('.text-format-preview-autopreview-toggle').bind('click', function() {
-//          if (wrapper.find('.text-format-preview-preview').css('visibility') == 'hidden') {
-//            wrapper.find('.text-format-preview-preview').css('visibility', 'visible');
-//            wrapper.find('.form-textarea-wrapper').css('visibility', 'hidden');
-//          }
-//          else {
-//            wrapper.find('.text-format-preview-preview').css('visibility', 'hidden');
-//            wrapper.find('.form-textarea-wrapper').css('visibility', 'visible');
-//          }
-//        });
-
-//        // Second way...
-//        wrapper.find('.text-format-preview-preview').hide();
-//        wrapper.find('.text-format-preview-autopreview-toggle').bind('click', function() {
-//            wrapper.find('.text-format-preview-preview').toggle();
-//            wrapper.find('.form-textarea-wrapper').toggle();
-//        });
-
-        // Third way...
+        // Manage preview visibility.
         wrapper.find('.text-format-preview-preview').hide();
         checkbox.parent().bind('click', function() {
+          // Show only if autopreview checkbox is checked.
           if (checkbox.is(':checked')) {
             wrapper.find('.text-format-preview-preview').show();
           }
@@ -39,18 +19,17 @@
           }
         });
 
-        // Set preview height.
-        wrapper.find('.text-format-preview-preview').css('max-height', wrapper.find('textarea').eq(0).height());
-
-        // Autoupdate preview.
-        wrapper.find('textarea').bind('focus keyup', function() {
+        // Preview autoupdate.
+        wrapper.find('textarea').bind('change keyup keydown', function() {
           if (checkbox.is(':checked')) {
             window.clearTimeout(checkbox.data('timeout'));
             checkbox.data('timeout', setTimeout(function () {
-              // Do your thing here
-              Drupal.ajax[checkbox.attr('id')].eventResponse(checkbox, 'click');
-              console.log('Render');
-            }, 1000));
+              if (Drupal.ajax[checkbox.attr('id')].ajaxing == false) {
+                // Send new request after 300ms and if Drupal is not processing
+                // last one.
+                Drupal.ajax[checkbox.attr('id')].eventResponse(checkbox, 'click');
+              }
+            }, 300));
           }
         })
       });
