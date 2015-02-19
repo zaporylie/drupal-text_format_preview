@@ -9,23 +9,23 @@
         // Store wrapper as variable.
         var wrapper = checkbox.parents('.text-format-preview-wrapper');
 
-        // Manage preview visibility.
-        if (checkbox.is(':checked')) {
-          wrapper.find('.text-format-preview-preview').show();
-        }
-        else {
-          wrapper.find('.text-format-preview-preview').hide();
-        }
-
-        // Show or hide element on checkbox state change.
-        checkbox.change(function() {
-          // Show only if autopreview checkbox is checked.
+        // Show or hide preview container.
+        var text_format_preview_checked = function() {
           if (checkbox.is(':checked')) {
+            // Show only if autopreview checkbox is checked.
             wrapper.find('.text-format-preview-preview').show();
           }
           else {
             wrapper.find('.text-format-preview-preview').hide();
           }
+        };
+
+        // Manage preview visibility.
+        text_format_preview_checked();
+
+        // Show or hide element on checkbox state change.
+        checkbox.change(function() {
+          text_format_preview_checked();
         });
 
         // Preview autoupdate.
