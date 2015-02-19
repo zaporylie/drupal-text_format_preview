@@ -2,6 +2,7 @@
  * @file
  * Manage preview display and bind change/keyup for textarea field.
  */
+
 (function ($) {
   /**
    * Attaches the autopreview behavior to all text_format elements.
