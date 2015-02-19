@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Remove unused variable.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function text_format_preview_uninstall() {
+  variable_del('text_format_preview_autopreview_default');
+}
