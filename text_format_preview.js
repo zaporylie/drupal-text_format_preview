@@ -1,4 +1,11 @@
+/**
+ * @file
+ * Manage preview display and bind change/keyup for textarea field.
+ */
 (function ($) {
+  /**
+   * Attaches the autopreview behavior to all text_format elements.
+   */
   Drupal.behaviors.text_format_preview = {
     attach: function (context, settings) {
       $('.text-format-preview-autopreview-checkbox', context).once('text_format_preview', function () {
@@ -9,7 +16,9 @@
         // Store wrapper as variable.
         var wrapper = checkbox.parents('.text-format-preview-wrapper');
 
-        // Show or hide preview container.
+        /**
+         * Shows or hides preview container.
+         */
         var text_format_preview_checked = function() {
           if (checkbox.is(':checked')) {
             // Show only if autopreview checkbox is checked.
@@ -24,7 +33,7 @@
         text_format_preview_checked();
 
         // Show or hide element on checkbox state change.
-        checkbox.change(function() {
+        checkbox.bind('change', function() {
           text_format_preview_checked();
         });
 
@@ -47,6 +56,11 @@
     }
   };
 
+  /**
+   * Updates preview container content.
+   *
+   * @fires jQuery.html
+   */
   Drupal.ajax.prototype.commands.text_format_preview = function(ajax, response, status) {
 
     // Get default selector for triggering element.

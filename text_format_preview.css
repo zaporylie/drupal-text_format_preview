@@ -1,5 +1,7 @@
-.text-format-preview-wrapper {
-}
+/**
+ * @file
+ * Add default styles to preview container and controls.
+ */
 .text-format-preview-autopreview {
   text-align: right;
   border: 1px solid #ccc;
