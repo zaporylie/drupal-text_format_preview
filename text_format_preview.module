@@ -114,7 +114,11 @@ function text_format_preview_process_text_format($element) {
  */
 function text_format_preview_callback($form, &$form_state) {
 
+  global $user;
   $commands = array();
+
+  // Get list of available text formats for issue.
+  $formats = filter_formats($user);
 
   // Only if triggering checkbox has value TRUE.
   if ($form_state['triggering_element']['#value']) {
@@ -130,7 +134,12 @@ function text_format_preview_callback($form, &$form_state) {
         $value = $value[$path[$i]];
       }
 
-      if (isset($value['format']) && isset($value['value'])) {
+      if (isset($value['format']) && isset($value['value']) && !isset($formats[$value['format']])) {
+        // User doesn't have access to format.
+        $commands[] = ajax_command_alert(t('Illegal choice.'));
+        break;
+      }
+      elseif (isset($value['format']) && isset($value['value'])) {
         // We can set custom replace command now.
         $commands[] = array(
           'command' => 'text_format_preview',
